@@ -1,53 +1,40 @@
-import java.util.*;
-
 class Solution {
-    private boolean isAllIncluded(HashMap<Character, Integer> target, HashMap<Character, Integer> included) {
-        boolean ok = true;
+    private boolean isValid(HashMap<Character, Integer> target, HashMap<Character, Integer> current) {
         for (Map.Entry<Character, Integer> entry : target.entrySet()) {
-            char letter = entry.getKey();
-            int f = entry.getValue();
-            if (included.getOrDefault(letter, 0) < f) {
-                ok = false;
-                break;
+            char c = entry.getKey();
+            int v = entry.getValue();
+            if (current.getOrDefault(c, 0) < v) {
+                return false;
             }
         }
-        return ok;
+        return true;
     }
 
     public String minWindow(String s, String t) {
         HashMap<Character, Integer> target = new HashMap<>();
         for (int i = 0; i < t.length(); i++) {
-            target.put(t.charAt(i), target.getOrDefault(t.charAt(i), 0) + 1);
+            char c = t.charAt(i);
+            target.put(c, target.getOrDefault(c, 0) + 1);
         }
 
         int left = 0;
         int right = 0;
-        boolean possible = false;
-        String minimum = String.valueOf(s);
-        HashMap<Character, Integer> included = new HashMap<>();
+        String min = "";
+        HashMap<Character, Integer> current = new HashMap<>();
         while (right < s.length()) {
-            included.put(s.charAt(right), included.getOrDefault(s.charAt(right), 0) + 1);
-            while (isAllIncluded(target, included)) {
-                possible = true;
-                String substring = s.substring(left, right + 1);
-                if (substring.length() < minimum.length()) {
-                    minimum = substring;
+            char c = s.charAt(right);
+            current.put(c, current.getOrDefault(c, 0) + 1);
+            while (this.isValid(target, current)) {
+                String sub = s.substring(left, right + 1);
+                if (min.compareTo("") == 0 || sub.length() < min.length()) {
+                    min = sub;
                 }
-                included.put(s.charAt(left), included.get(s.charAt(left)) - 1);
+                c = s.charAt(left);
+                current.put(c, current.get(c) - 1);
                 left++;
             }
             right++;
         }
-        return possible ? minimum : "";
-    }
-
-    public static void main(String[] args) {
-        String s = "ADOBECODEBANC";
-        String t = "ABC";
-
-        Solution solution = new Solution();
-        System.out.println(solution.minWindow(s, t));
-        System.out.println(solution.minWindow("a", "a"));
-        System.out.println(solution.minWindow("a", "aa"));
+        return min;
     }
 }
