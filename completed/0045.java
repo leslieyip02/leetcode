@@ -2,14 +2,19 @@ import java.util.*;
 
 class Solution {
     public int jump(int[] nums) {
-        int[] moves = new int[nums.length];
-        Arrays.fill(moves, (int) 1e6);
-        moves[0] = 0;
-        for (int i = 0; i < nums.length; i++) {
-            for (int j = 1; j <= nums[i] && i + j < moves.length; j++) {
-                moves[i + j] = Math.min(moves[i] + 1, moves[i + j]);
+        int end = 0;
+        int furthest = 0;
+        int jumps = 0;
+        for (int i = 0; i < nums.length - 1; i++) {
+            furthest = Math.max(i + nums[i], furthest);
+            if (furthest >= nums.length - 1) {
+                return jumps + 1;
+            }
+            if (i == end) {
+                end = furthest;
+                jumps++;
             }
         }
-        return moves[moves.length - 1];
+        return jumps;
     }
 }
