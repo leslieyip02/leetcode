@@ -2,36 +2,30 @@ import java.util.*;
 
 class Solution {
     public int countPalindromicSubsequence(String s) {
-        HashMap<Character, Integer> left = new HashMap<>();
-        HashMap<Character, Integer> right = new HashMap<>();
-        left.put(s.charAt(0), 1);
-        for (int i = 1; i < s.length(); i++) {
-            char c = s.charAt(i);
-            right.put(c, right.getOrDefault(c, 0) + 1);
-        }
-
-        HashSet<String> palindromes = new HashSet<>();
-        for (int i = 1; i < s.length() - 1; i++) {
-            Character current = s.charAt(i);
-            right.put(current, right.get(current) - 1);
-            for (Character c : left.keySet()) {
-                String palindrome = "" + c + current + c;
-                if (palindromes.contains(palindrome)) {
-                    continue;
-                }
-                if (right.getOrDefault(c, 0) > 0) {
-                    palindromes.add(palindrome);
-                }
+        int[] lefts = new int[26];
+        Arrays.fill(lefts, -1);
+        int[] rights = new int[26];
+        Arrays.fill(rights, -1);
+        for (int i = 0; i < s.length(); i++) {
+            int index = (int) s.charAt(i) - 97;
+            if (lefts[index] == -1) {
+                lefts[index] = i;
             }
-            left.put(current, left.getOrDefault(current, 0) + 1);
+            rights[index] = i;
         }
-        return palindromes.size();
-    }
 
-    public static void main(String[] args) {
-        String s = "bbcbaba";
+        int count = 0;
+        for (int i = 0; i < 26; i++) {
+            if (lefts[i] == -1) {
+                continue;
+            }
 
-        Solution solution = new Solution();
-        System.out.println(solution.countPalindromicSubsequence(s));
+            Set<Character> unique = new HashSet<>();
+            for (int j = lefts[i] + 1; j < rights[i]; j++) {
+                unique.add(s.charAt(j));
+            }
+            count += unique.size();
+        }
+        return count;
     }
 }
