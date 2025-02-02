@@ -1,22 +1,14 @@
 class Solution {
     public boolean check(int[] nums) {
-        int n = nums.length;
-        int start = 0;
-        while (start < n) {
-            boolean done = true;
-            for (int i = 1; i < n; i++) {
-                int current = nums[(start + i) % n];
-                int previous = nums[(start + i - 1) % n];
-                if (current < previous) {
-                    start += i;
-                    done = false;
-                    break;
+        boolean hasDescended = false;
+        for (int i = 1; i <= nums.length; i++) {
+            if (nums[i % nums.length] < nums[i - 1]) {
+                if (hasDescended) {
+                    return false;
                 }
-            }
-            if (done) {
-                return true;
+                hasDescended = true;
             }
         }
-        return false;
+        return true;
     }
 }
