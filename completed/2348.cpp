@@ -1,25 +1,25 @@
 class Solution {
-private:
-    long long count(int start, int end) {
-        long long distance = end - start;
-        return distance * (distance + 1) / 2;
-    }
-
 public:
     long long zeroFilledSubarray(vector<int>& nums) {
+        long long count = 0;
         int left = 0;
         int right = 0;
-        long long total = 0;
-        while (right < nums.size()) {
-            if (nums[right] == 0) {
-                right++;
-            } else {
-                total += count(left, right);
-                right++;
-                left = right;
+        while (left < nums.size()) {
+            if (nums[left] != 0) {
+                left++;
+                right = left;
+                continue;
             }
+
+            if (right < nums.size() && nums[right] == 0) {
+                right++;
+                continue;
+            }
+
+            long long length = right - left;
+            count += length * (length + 1) / 2;
+            left = right;
         }
-        total += count(left, right);
-        return total;
+        return count;
     }
 };
