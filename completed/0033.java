@@ -1,48 +1,53 @@
 class Solution {
+    private static final int NOT_FOUND = -1;
+
     public int search(int[] nums, int target) {
-        int left = 0;
-        int right = nums.length - 1;
-        int pivot = nums.length - 1;
-        while (left < right) {
-            int mid = (left + right) / 2;
-            if (mid < nums.length - 1) {
-                if (nums[mid + 1] < nums[mid]) {
-                    pivot = mid;
-                    break;
-                }
-            }
-
-            if (nums[mid] < nums[right]) {
-                right = mid;
-            } else {
-                left = mid;
-            }
+        int maximumIndex = findMaximumIndex(nums);
+        int leftResult = findInRange(0, maximumIndex + 1, nums, target);
+        if (leftResult != NOT_FOUND) {
+            return leftResult;
         }
-
-        int leftRange = searchInRange(nums, target, 0, pivot);
-        if (leftRange != -1) {
-            return leftRange;
-        }
-        int rightRange = searchInRange(nums, target, pivot + 1, nums.length - 1);
-        if (rightRange != -1) {
-            return rightRange;
-        }
-        return -1;
+        return findInRange(maximumIndex + 1, nums.length, nums, target);
     }
 
-    int searchInRange(int[] nums, int target, int left, int right) {
-        while (left < right) {
-            int mid = (left + right) / 2;
+    private int findMaximumIndex(int[] nums) {
+        int start = 0;
+        int end = nums.length;
+        while (start < end) {
+            int mid = (start + end) / 2;
+            boolean leftOk = mid == 0 || nums[mid] > nums[mid - 1];
+            boolean rightOk = mid == nums.length - 1 || nums[mid] > nums[mid + 1];
+            if (leftOk && rightOk) {
+                return mid;
+            }
+
+            if (nums[mid] > nums[start]) {
+                start = mid + 1;
+            } else {
+                end = mid;
+            }
+        }
+        throw new IllegalStateException();
+    }
+
+    // end is exclusive
+    private int findInRange(int start, int end, int[] nums, int target) {
+        if (start >= nums.length || target < nums[start] || target > nums[end - 1]) {
+            return NOT_FOUND;
+        }
+
+        while (start < end) {
+            int mid = (start + end) / 2;
             if (nums[mid] == target) {
                 return mid;
             }
 
             if (nums[mid] < target) {
-                left = mid + 1;
+                start = mid + 1;
             } else {
-                right = mid - 1;
+                end = mid;
             }
         }
-        return left < nums.length && nums[left] == target ? left : -1;
+        return NOT_FOUND;
     }
 }
